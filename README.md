@@ -104,6 +104,16 @@ conda activate deimv2
 pip install -r requirements.txt
 ```
 
+> [!IMPORTANT] Windows + CUDA users
+> Installing the CUDA-enabled PyTorch wheels from the `pytorch`/`nvidia` channels
+> may pull in both Intel and LLVM OpenMP runtimes.  When they are loaded in the
+> same process, Windows raises `libiomp5md.dll already initialized`, which aborts
+> training before the model starts running on your GPU.  Our launcher now sets
+> `KMP_DUPLICATE_LIB_OK=TRUE` automatically as a safety net, but the recommended
+> long-term fix is to clean up the environment so that only **one** OpenMP
+> runtime is installed (for example by reinstalling PyTorch/NumPy from a single
+> vendor channel or removing extra `intel-openmp` packages).
+
 
 ### Data Preparation
 
@@ -367,6 +377,45 @@ If you'd like to train **DEIMv2-S** on COCO2017 with an input size of 320x320, f
     ```
    
 </details>
+
+
+
+<details>
+<summary> Quick CUDA OOM mitigation from the CLI </summary>
+
+The training launcher now exposes memory-friendly overrides so you can shrink
+the working set without editing YAML files.  This is particularly helpful when
+running ViT-based variants (e.g. `deimv2_dinov3_s_coco.yml`) on GPUs with less
+than 48&nbsp;GB of memory.
+
+```bash
+# Reduce the per-device batch size to 8 (or use --train-total-batch-size for
+# multi-GPU runs), clamp the training/eval resize to 512, and disable
+# train-time multi-scale to keep the resolution fixed.
+python train.py \
+  --config configs/deimv2/deimv2_dinov3_s_coco.yml \
+  --use-amp --seed 0 \
+  --train-batch-size 8 \
+  --eval-image-size 512 \
+  --train-image-size 512 \
+  --disable-train-multiscale
+```
+
+Available flags:
+
+| Flag | Effect |
+| --- | --- |
+| `--train-batch-size` / `--train-total-batch-size` | Override the per-device or global train batch size (mutually exclusive). |
+| `--val-batch-size` / `--val-total-batch-size` | Override the validation loader batch size. |
+| `--train-image-size` | Clamp the training resize/base size (updates the collate function and all `Resize` transforms). |
+| `--eval-image-size` | Clamp the evaluation resize to a fixed size. |
+| `--disable-train-multiscale` | Disable train-time multi-scale augmentation by forcing `base_size_repeat=None`. |
+
+The script prints `[Override] ...` lines summarizing every mutation it applied
+so you can verify the effective configuration.
+
+</details>
+
 
 <details>
 <summary> Customizing Epoch </summary>
