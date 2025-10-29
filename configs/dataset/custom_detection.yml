@@ -13,6 +13,8 @@ train_dataloader:
     type: CocoDetection
     img_folder: D:/datasets/Windturbine/multi-topography-dataset-for-wind-turbine-detection-DatasetNinja-expanded/ds/images/train
     ann_file: D:/datasets/Windturbine/multi-topography-dataset-for-wind-turbine-detection-DatasetNinja-expanded/ds/annotations/instances_train.json
+#    img_folder: D:/workspace/python/dinov3-detection/deimv2/dataset/images/train
+#    ann_file: D:/workspace/python/dinov3-detection/deimv2/dataset/annotations/instances_train2017_coco.json
     return_masks: False
     transforms:
       type: Compose
@@ -29,6 +31,8 @@ val_dataloader:
     type: CocoDetection
     img_folder: D:/datasets/Windturbine/multi-topography-dataset-for-wind-turbine-detection-DatasetNinja-expanded/ds/images/val
     ann_file: D:/datasets/Windturbine/multi-topography-dataset-for-wind-turbine-detection-DatasetNinja-expanded/ds/annotations/instances_val.json
+#    img_folder: D:/workspace/python/dinov3-detection/deimv2/dataset/images/val
+#    ann_file: D:/workspace/python/dinov3-detection/deimv2/dataset/annotations/instances_val2017_coco.json
     return_masks: False
     transforms:
       type: Compose

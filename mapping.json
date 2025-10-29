@@ -1,0 +1,8 @@
+{
+  "train_loss_bbox": "train/box_loss",
+  "train_loss_fgl": "train/cls_loss",
+  "train_loss_mal": "train/dfl_loss",
+  "coco/AP50": "metrics/mAP50(B)",
+  "coco/AP": "metrics/mAP50-95(B)",
+  "train_lr": "lr/pg0"
+}
